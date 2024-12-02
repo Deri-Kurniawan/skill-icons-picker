@@ -20,7 +20,7 @@ const IconDownloader = () => {
   const saveAs = async (format: "svg" | "png" | "webp" | "jpeg") => {
     const srcUrl = state.generatedUrl;
     const svgText = await fetchSvg(srcUrl);
-    const fileName = `skillicons_${
+    const fileName = `skillicons_${state.theme}_${
       state.selectedIcons.length === 0
         ? "all"
         : state.selectedIcons.map((i) => i.iconId).join("-")
