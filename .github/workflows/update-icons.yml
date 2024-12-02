@@ -1,0 +1,45 @@
+name: Watch External Repository and Update Icons
+
+on:
+  schedule:
+    - cron: "0 0 1 * *" # Check on the first day of every month at midnight
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+
+      - name: Check for changes in the external repository
+        run: |
+          git clone https://github.com/tandpfun/skill-icons.git
+          cd skill-icons
+          git fetch origin main
+          git diff --exit-code origin/main || echo "Changes detected in the external repository"
+
+      - name: Run update script
+        if: success() # Run only if changes were detected
+        run: |
+          # Install dependencies
+          npm install -g pnpm
+          pnpm install
+
+          # Run the icon update script
+          pnpm run update:icons
+
+      - name: Git setup
+        run: |
+          # Git configuration
+          git config --global user.email "${{ secrets.GIT_EMAIL }}"
+          git config --global user.name "${{ secrets.GIT_NAME }}"
+
+      - name: Commit and push changes
+        if: success()
+        run: |
+          git add src/lib/const.ts
+          git commit -m "Update ICONS variable in const.ts"
+          git status 
+          git push origin main
+        continue-on-error: true
