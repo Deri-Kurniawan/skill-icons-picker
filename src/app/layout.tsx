@@ -69,6 +69,7 @@ export default function RootLayout({
                           rel="noopener noreferrer"
                         >
                           <IconBrandGithub className="size-6" />
+                          <span className="sr-only">GitHub Repository</span>
                         </a>
                       </Button>
                     </TooltipTrigger>

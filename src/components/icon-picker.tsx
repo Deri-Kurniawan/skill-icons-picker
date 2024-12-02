@@ -137,6 +137,9 @@ const IconPicker = () => {
                     ) : (
                       <IconMoonFill className="text-primary size-4" />
                     )}
+                    <span className="sr-only">
+                      {state.theme == "light" ? "Dark" : "Light"} Mode
+                    </span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -252,7 +255,7 @@ const IconPicker = () => {
                   })}
                   width={64}
                   height={64}
-                  alt={icon.label}
+                  alt={`${icon.label} Icon`}
                   loading={index < 30 ? "eager" : "lazy"}
                   priority={index < 30}
                 />
