@@ -349,7 +349,7 @@ const IconPicker = () => {
                     payload: value < 1 ? 1 : value,
                   });
                 }}
-                value={state.perline}
+                defaultValue={state.perline}
               />
             </div>
 
