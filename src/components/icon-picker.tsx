@@ -345,11 +345,13 @@ const IconPicker = () => {
                 type="number"
                 name="perline"
                 placeholder="Icon perline"
+                min="1"
+                max="50"
                 onChange={(e) => {
                   const value = parseInt(e.target.value) || 1;
                   dispatch({
                     type: "SET_PERLINE",
-                    payload: value < 1 ? 1 : value,
+                    payload: Math.min(Math.max(value, 1), 50),
                   });
                 }}
                 defaultValue={state.perline}
