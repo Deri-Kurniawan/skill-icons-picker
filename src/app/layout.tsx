@@ -42,7 +42,7 @@ export default function RootLayout({
           <div className="max-w-screen-xl px-4 md:px-8 mx-auto mb-8">
             <header className="flex flex-row gap-4 justify-between items-center pt-4">
               <div>
-                <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+                <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
                   Skill Icons Picker
                 </h1>
                 <p className="leading-7 [&:not(:first-child)]:mt-6">

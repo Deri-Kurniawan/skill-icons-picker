@@ -2,9 +2,9 @@ import { fetchSvg } from "@/app/actions";
 import { useIconPicker } from "@/hooks/use-icon-picker";
 import { Button } from "./ui/button";
 
-const formats = ["svg", "png", "webp", "jpeg"] as const;
+const DEFAULT_FORMATS = ["svg", "png", "webp", "jpeg"] as const;
 
-const IconDownloader = () => {
+const IconDownloader = ({ formats = DEFAULT_FORMATS }) => {
   const { state } = useIconPicker();
 
   const performDownload = (url: string, fileName: string) => {

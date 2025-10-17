@@ -295,40 +295,34 @@ const IconPicker = () => {
         asChild
       >
         <main>
-          <div className="order-last lg:order-first flex flex-col gap-4">
-            <div>
-              <h3 className="mb-4 text-2xl font-semibold tracking-tight scroll-m-20">
-                URL
-              </h3>
-              <CodeBlock copyText={state.generatedUrl}>
-                {state.generatedUrl}
-              </CodeBlock>
-            </div>
+          <div
+            className={cn(
+              "order-last lg:order-first flex flex-col gap-4",
+              "[&_h3]:mb-4 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:tracking-tight [&_h3]:scroll-m-20"
+            )}
+          >
+            {[
+              {
+                label: "URL",
+                code: state.generatedUrl,
+              },
+              {
+                label: "Markdown",
+                code: `![Tech Stack](${state.generatedUrl})`,
+              },
+              {
+                label: "HTML",
+                code: `<img src="${state.generatedUrl}" width="100" height="100" alt="Tech Stack" />`,
+              },
+            ].map((item) => (
+              <div key={item.label}>
+                <h3>{item.label}</h3>
+                <CodeBlock copyText={item.code}>{item.code}</CodeBlock>
+              </div>
+            ))}
 
             <div>
-              <h3 className="mb-4 text-2xl font-semibold tracking-tight scroll-m-20">
-                Markdown
-              </h3>
-              <CodeBlock
-                copyText={`![Tech Stack](${state.generatedUrl})`}
-              >{`![Tech Stack](${state.generatedUrl})`}</CodeBlock>
-            </div>
-
-            <div>
-              <h3 className="mb-4 text-2xl font-semibold tracking-tight scroll-m-20">
-                HTML
-              </h3>
-              <CodeBlock
-                copyText={`<img src="${state.generatedUrl}" width="100" height="100" alt="Tech Stack" />`}
-              >
-                {`<img src="${state.generatedUrl}" width="100" height="100" alt="Tech Stack" />`}
-              </CodeBlock>
-            </div>
-
-            <div>
-              <h3 className="mb-4 text-2xl font-semibold tracking-tight scroll-m-20">
-                Download
-              </h3>
+              <h3>Download</h3>
               <div className="flex flex-wrap gap-4">
                 <IconDownloader />
               </div>
@@ -336,9 +330,7 @@ const IconPicker = () => {
           </div>
 
           <div>
-            <h3 className="mb-4 text-2xl font-semibold tracking-tight scroll-m-20">
-              Preview
-            </h3>
+            <h3>Preview</h3>
 
             <div className="mb-6">
               <Label htmlFor="perline">Perline</Label>
@@ -412,7 +404,7 @@ const IconPicker = () => {
                 </div>
               ) : (
                 <Image
-                  className="w-full aspect-video rounded-md p-4 border"
+                  className="w-full aspect-video rounded-md p-4"
                   src={state.generatedUrl}
                   width={592}
                   height={333}
@@ -420,7 +412,6 @@ const IconPicker = () => {
                 />
               )}
             </div>
-            {/* tips alert */}
             {state.selectedIcons.length > 0 && (
               <div
                 className="p-4 mt-4 text-sm text-blue-800 rounded-lg bg-blue-50"
