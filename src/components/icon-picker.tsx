@@ -119,85 +119,15 @@ const IconPicker = () => {
                 placeholder="Find icons (Ctrl + K)"
               />
             </div>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      if (state.theme === "light") {
-                        dispatch({ type: "SET_THEME", payload: "dark" });
-                      } else {
-                        dispatch({ type: "SET_THEME", payload: "light" });
-                      }
-                    }}
-                  >
-                    {state.theme == "light" ? (
-                      <IconSunFill className="text-yellow-500 size-4" />
-                    ) : (
-                      <IconMoonFill className="text-primary size-4" />
-                    )}
-                    <span className="sr-only">
-                      {state.theme == "light" ? "Dark" : "Light"} Mode
-                    </span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="capitalize">{state.theme} Mode</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            {state.selectedIcons.length > 0 && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      className="hidden md:flex"
-                      variant="outline"
-                      onClick={() =>
-                        dispatch({
-                          type: "SET_SELECTED_ICONS",
-                          payload: [],
-                        })
-                      }
-                    >
-                      {`${state.selectedIcons.length} selected`}
-                      <IconX className="size-8 ml-2" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Deselect</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
+            <ThemeToggle />
+            <DeselectButton className="hidden md:flex" />
           </div>
           <div className="flex gap-2 md:gap-4">
             <TabsList>
               <TabsTrigger value="icons">Icons</TabsTrigger>
               <TabsTrigger value="output">Output</TabsTrigger>
             </TabsList>
-            {state.selectedIcons.length > 0 && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      className="md:hidden"
-                      variant="outline"
-                      onClick={() =>
-                        dispatch({
-                          type: "SET_SELECTED_ICONS",
-                          payload: [],
-                        })
-                      }
-                    >
-                      {`${state.selectedIcons.length} selected`}
-                      <IconX className="size-8 ml-2" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Deselect</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
+            <DeselectButton className="md:hidden" />
           </div>
         </div>
       </div>
@@ -210,13 +140,7 @@ const IconPicker = () => {
         <main>
           {inputSearchTermRef.current &&
             inputSearchTermRef.current.value !== "" &&
-            state.filteredIcons.length <= 0 && (
-              <div className="col-span-full text-center py-2 px-4">
-                <p className="leading-7 [&:not(:first-child)]:mt-6">
-                  Looks like the icon you&apos;re looking for isn&apos;t here.
-                </p>
-              </div>
-            )}
+            state.filteredIcons.length <= 0 && <NoSearchResultMessage />}
 
           {state.filteredIcons.length > 0 ? (
             state.filteredIcons.map((icon, index) => (
@@ -277,11 +201,7 @@ const IconPicker = () => {
                   </div>
                 )
               ) : (
-                <div className="col-span-full text-center py-2 px-4">
-                  <p className="leading-7 [&:not(:first-child)]:mt-6">
-                    Looks like the icon you&apos;re looking for isn&apos;t here.
-                  </p>
-                </div>
+                <NoSearchResultMessage />
               )}
             </>
           )}
@@ -427,5 +347,82 @@ const IconPicker = () => {
     </Tabs>
   );
 };
+
+function ThemeToggle() {
+  const { state, dispatch } = useIconPicker();
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              if (state.theme === "light") {
+                dispatch({ type: "SET_THEME", payload: "dark" });
+              } else {
+                dispatch({ type: "SET_THEME", payload: "light" });
+              }
+            }}
+          >
+            {state.theme == "light" ? (
+              <IconSunFill className="text-yellow-500 size-4" />
+            ) : (
+              <IconMoonFill className="text-primary size-4" />
+            )}
+            <span className="sr-only">
+              {state.theme == "light" ? "Dark" : "Light"} Mode
+            </span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="capitalize">{state.theme} Mode</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+function DeselectButton({ className }: { className?: string }) {
+  const { state, dispatch } = useIconPicker();
+
+  return (
+    <>
+      {state.selectedIcons.length > 0 && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className={className}
+                variant="outline"
+                onClick={() =>
+                  dispatch({
+                    type: "SET_SELECTED_ICONS",
+                    payload: [],
+                  })
+                }
+              >
+                {`${state.selectedIcons.length} selected`}
+                <IconX className="size-8 ml-2" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Deselect</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+    </>
+  );
+}
+
+function NoSearchResultMessage() {
+  return (
+    <div className="col-span-full text-center space-y-2 px-4">
+      <p className="leading-7 [&:not(:first-child)]:mt-6">
+        Looks like the icon you&apos;re looking for isn&apos;t here.
+      </p>
+    </div>
+  );
+}
 
 export default IconPicker;
