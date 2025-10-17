@@ -23,6 +23,7 @@ const IconPicker = () => {
   const [activeTab, setActiveTab] = useState<"icons" | "output">("icons");
   const { state, dispatch } = useIconPicker();
   const inputSearchTermRef = useRef<HTMLInputElement>(null);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (inputSearchTermRef.current) {
@@ -358,13 +359,77 @@ const IconPicker = () => {
               />
             </div>
 
-            <Image
-              className="w-full aspect-video rounded-md p-4 border"
-              src={state.generatedUrl}
-              width={592}
-              height={333}
-              alt="Tech Stack Preview"
-            />
+            <div className="w-full aspect-video rounded-md p-4 border flex items-center justify-center">
+              {state.selectedIcons.length > 0 ? (
+                <div
+                  className="grid gap-2"
+                  style={{
+                    gridTemplateColumns: `repeat(${Math.min(
+                      state.perline,
+                      state.selectedIcons.length
+                    )}, 1fr)`,
+                  }}
+                >
+                  {state.selectedIcons.map((icon, index) => (
+                    <div
+                      key={icon.iconId}
+                      className={cn(
+                        "relative rounded-md transition-all duration-200",
+                        draggedIndex === index && "opacity-50 scale-95",
+                        draggedIndex !== null &&
+                          draggedIndex !== index &&
+                          "ring-2 ring-blue-300"
+                      )}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={() => {
+                        if (draggedIndex !== null && draggedIndex !== index) {
+                          const newSelected = [...state.selectedIcons];
+                          const [removed] = newSelected.splice(draggedIndex, 1);
+                          newSelected.splice(index, 0, removed);
+                          dispatch({
+                            type: "SET_SELECTED_ICONS",
+                            payload: newSelected,
+                          });
+                        }
+                        setDraggedIndex(null);
+                      }}
+                    >
+                      <Image
+                        src={buildUrl(`${API_URL}/icons`, {
+                          i: icon.iconId,
+                          theme: state.theme,
+                        })}
+                        width={40}
+                        height={40}
+                        alt={`${icon.label} Icon`}
+                        className="size-10 cursor-grab active:cursor-grabbing"
+                        draggable
+                        onDragStart={() => setDraggedIndex(index)}
+                        onDragEnd={() => setDraggedIndex(null)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Image
+                  className="w-full aspect-video rounded-md p-4 border"
+                  src={state.generatedUrl}
+                  width={592}
+                  height={333}
+                  alt="Tech Stack Preview"
+                />
+              )}
+            </div>
+            {/* tips alert */}
+            {state.selectedIcons.length > 0 && (
+              <div
+                className="p-4 mt-4 text-sm text-blue-800 rounded-lg bg-blue-50"
+                role="alert"
+              >
+                <span className="font-medium">Tip:</span> You can drag and drop
+                icons to reorder them in the preview above.
+              </div>
+            )}
           </div>
         </main>
       </TabsContent>
