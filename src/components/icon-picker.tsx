@@ -18,9 +18,15 @@ import { IconMoonFill, IconSunFill, IconX } from "justd-icons";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import IconDownloader from "./icon-downloader";
+import { parseAsStringEnum, useQueryState } from "nuqs";
 
 const IconPicker = () => {
-  const [activeTab, setActiveTab] = useState<"icons" | "output">("icons");
+  const [activeTab, setActiveTab] = useQueryState(
+    "tab",
+    parseAsStringEnum<"icons" | "output">(["icons", "output"]).withDefault(
+      "icons"
+    )
+  );
   const { state, dispatch } = useIconPicker();
   const inputSearchTermRef = useRef<HTMLInputElement>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -169,11 +175,10 @@ const IconPicker = () => {
                 }}
               >
                 <Image
-                  className={`w-16 h-auto ${
-                    state.selectedIcons.includes(icon)
-                      ? "opacity-80 rounded-2xl transition-all duration-75 ease-in-out"
-                      : ""
-                  }`}
+                  className={`w-16 h-auto ${state.selectedIcons.includes(icon)
+                    ? "opacity-80 rounded-2xl transition-all duration-75 ease-in-out"
+                    : ""
+                    }`}
                   src={buildUrl(`${API_URL}/icons`, {
                     i: icon.iconId,
                     theme: state.theme,
@@ -289,8 +294,8 @@ const IconPicker = () => {
                         "relative rounded-md transition-all duration-200",
                         draggedIndex === index && "opacity-50 scale-95",
                         draggedIndex !== null &&
-                          draggedIndex !== index &&
-                          "ring-2 ring-blue-300"
+                        draggedIndex !== index &&
+                        "ring-2 ring-blue-300"
                       )}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={() => {
