@@ -1,4 +1,3 @@
-export const API_URL = "https://skillicons.dev";
 export const ICONS = [
   {
     "iconId": "ableton",

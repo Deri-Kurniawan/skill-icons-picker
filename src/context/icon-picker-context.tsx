@@ -1,8 +1,15 @@
 "use client";
 
+import { env } from "@/env";
 import { TIcon } from "@/global";
-import { API_URL } from "@/lib/const";
 import { buildUrl } from "@/lib/utils";
+import {
+  parseAsArrayOf,
+  parseAsInteger,
+  parseAsString,
+  parseAsStringEnum,
+  useQueryState,
+} from "nuqs";
 import {
   createContext,
   FC,
@@ -11,13 +18,6 @@ import {
   useMemo,
   useReducer,
 } from "react";
-import {
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsString,
-  parseAsStringEnum,
-  useQueryState,
-} from "nuqs";
 
 type TIconPickerState = {
   icons: TIcon[];
@@ -109,7 +109,7 @@ export const IconPickerProvider: FC<IconPickerProviderProps> = ({
 
   const generatedUrl = useMemo(
     () =>
-      buildUrl(`${API_URL}/icons`, {
+      buildUrl(`${env.NEXT_PUBLIC_BASE_API_URL}/icons`, {
         i: selectedIconIds.length === 0 ? "all" : selectedIconIds.join(","),
         theme,
         perline: perline.toString(),

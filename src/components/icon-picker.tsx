@@ -19,6 +19,7 @@ import Image from "next/image";
 import { parseAsString, parseAsStringEnum, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import IconDownloader from "./icon-downloader";
+import { env } from "@/env";
 
 const IconPicker = () => {
   const isMounted = useIsMounted();
@@ -134,7 +135,7 @@ const IconPicker = () => {
                     ? "opacity-80 rounded-2xl transition-all duration-75 ease-in-out"
                     : ""
                     }`}
-                  src={buildUrl(`/api/icons`, {
+                  src={buildUrl(`${env.NEXT_PUBLIC_BASE_API_URL}/icons`, {
                     i: icon.iconId,
                     theme: state.theme,
                   })}
@@ -265,7 +266,7 @@ const IconPicker = () => {
                       }}
                     >
                       <Image
-                        src={buildUrl(`/api/icons`, {
+                        src={buildUrl(`${env.NEXT_PUBLIC_BASE_API_URL}/icons`, {
                           i: icon.iconId,
                           theme: state.theme,
                         })}

@@ -6,13 +6,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { IconPickerProvider } from "@/context/icon-picker-context";
-import { API_URL, ICONS } from "@/lib/const";
+import { ICONS } from "@/lib/const";
 import { IconBrandGithub } from "justd-icons";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Link from "next/link";
 import { NuqsAdapter } from "nuqs/adapters/next";
 import { Suspense } from "react";
+import { env } from "@/env";
 
 import "./globals.css";
 
@@ -56,7 +57,7 @@ export default function RootLayout({
                     <p className="leading-7 [&:not(:first-child)]:mt-6">
                       Icon picker tool for{" "}
                       <a
-                        href={API_URL}
+                        href={env.NEXT_PUBLIC_BASE_API_URL}
                         className="underline"
                         target="_blank"
                         rel="noopener noreferrer"
