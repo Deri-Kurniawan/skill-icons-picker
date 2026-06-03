@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
       },
     ],
-    minimumCacheTTL: 60 * 60 * 24,
+     minimumCacheTTL: 60 * 60 * 24 * 7, // 7 days
     dangerouslyAllowSVG: true,
   },
 };

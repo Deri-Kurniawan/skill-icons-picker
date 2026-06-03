@@ -12,6 +12,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Link from "next/link";
 import { NuqsAdapter } from "nuqs/adapters/next";
+import { Suspense } from "react";
 
 import "./globals.css";
 
@@ -41,71 +42,73 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NuqsAdapter>
-          <IconPickerProvider initialIcons={ICONS} initialFilteredIcons={ICONS}>
-            <div className="max-w-screen-xl px-4 md:px-8 mx-auto mb-8">
-              <header className="flex flex-row gap-4 justify-between items-center pt-4">
-                <div>
-                  <Link href="/">
-                    <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
-                      Skill Icons Picker
-                    </h1>
-                  </Link>
-                  <p className="leading-7 [&:not(:first-child)]:mt-6">
-                    Icon picker tool for{" "}
+        <Suspense>
+          <NuqsAdapter>
+            <IconPickerProvider initialIcons={ICONS} initialFilteredIcons={ICONS}>
+              <div className="max-w-screen-xl px-4 md:px-8 mx-auto mb-8">
+                <header className="flex flex-row gap-4 justify-between items-center pt-4">
+                  <div>
+                    <Link href="/">
+                      <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
+                        Skill Icons Picker
+                      </h1>
+                    </Link>
+                    <p className="leading-7 [&:not(:first-child)]:mt-6">
+                      Icon picker tool for{" "}
+                      <a
+                        href={API_URL}
+                        className="underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        skillicons.dev
+                      </a>
+                      .
+                    </p>
+                  </div>
+                  <div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button size="icon" asChild>
+                            <a
+                              href="https://github.com/Deri-Kurniawan/skill-icons-picker"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <IconBrandGithub className="size-6" />
+                              <span className="sr-only">GitHub Repository</span>
+                            </a>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>GitHub Repository</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </header>
+
+                {children}
+
+                <footer>
+                  <p className="mt-8">
+                    Made by{" "}
                     <a
-                      href={API_URL}
+                      href="https://github.com/Deri-Kurniawan"
                       className="underline"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      skillicons.dev
+                      Deri Kurniawan
                     </a>
-                    .
+                    , simply because he needed it.
                   </p>
-                </div>
-                <div>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button size="icon" asChild>
-                          <a
-                            href="https://github.com/Deri-Kurniawan/skill-icons-picker"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <IconBrandGithub className="size-6" />
-                            <span className="sr-only">GitHub Repository</span>
-                          </a>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>GitHub Repository</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </header>
-
-              {children}
-
-              <footer>
-                <p className="mt-8">
-                  Made by{" "}
-                  <a
-                    href="https://github.com/Deri-Kurniawan"
-                    className="underline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Deri Kurniawan
-                  </a>
-                  , simply because he needed it.
-                </p>
-              </footer>
-            </div>
-          </IconPickerProvider>
-        </NuqsAdapter>
+                </footer>
+              </div>
+            </IconPickerProvider>
+          </NuqsAdapter>
+        </Suspense>
       </body>
     </html>
   );

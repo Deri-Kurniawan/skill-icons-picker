@@ -12,99 +12,53 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useIconPicker } from "@/hooks/use-icon-picker";
-import { API_URL } from "@/lib/const";
+import useIsMounted from "@/hooks/use-is-mounted";
 import { buildUrl, cn } from "@/lib/utils";
 import { IconMoonFill, IconSunFill, IconX } from "justd-icons";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { parseAsString, parseAsStringEnum, useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 import IconDownloader from "./icon-downloader";
-import { parseAsStringEnum, useQueryState } from "nuqs";
 
 const IconPicker = () => {
+  const isMounted = useIsMounted();
   const [activeTab, setActiveTab] = useQueryState(
     "tab",
     parseAsStringEnum<"icons" | "output">(["icons", "output"]).withDefault(
       "icons"
     )
   );
+  const [searchTerm, setSearchTerm] = useQueryState(
+    "q",
+    parseAsString.withDefault("")
+  );
   const { state, dispatch } = useIconPicker();
-  const inputSearchTermRef = useRef<HTMLInputElement>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    if (inputSearchTermRef.current) {
-      if (inputSearchTermRef.current.value !== "") {
-        dispatch({
-          type: "SET_FILTERED_ICONS",
-          payload: state.icons.filter(
-            (icon) =>
-              icon.iconId
-                .toLowerCase()
-                .includes(
-                  (inputSearchTermRef.current?.value as string).toLowerCase()
-                ) ||
-              icon.label
-                .toLowerCase()
-                .includes(inputSearchTermRef.current?.value as string)
-          ),
-        });
-      }
+    if (searchTerm !== "") {
+      const result = state.icons.filter(
+        (icon) =>
+          icon.iconId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          icon.label.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      dispatch({ type: "SET_FILTERED_ICONS", payload: result });
     } else {
-      dispatch({
-        type: "SET_FILTERED_ICONS",
-        payload: state.icons,
-      });
-    }
-  }, [state.icons, dispatch, inputSearchTermRef.current?.value]);
-
-  useEffect(() => {
-    if (inputSearchTermRef.current) {
-      const handleInput = () => {
-        const target = inputSearchTermRef.current as HTMLInputElement;
-
-        dispatch({
-          type: "SET_SEARCH_TERMS",
-          payload: target.value,
-        });
-
-        setActiveTab("icons");
-
-        if (target.value !== "") {
-          const result = state.icons.filter(
-            (icon) =>
-              icon.iconId.toLowerCase().includes(target.value.toLowerCase()) ||
-              icon.label.toLowerCase().includes(target.value.toLowerCase())
-          );
-          dispatch({
-            type: "SET_FILTERED_ICONS",
-            payload: result,
-          });
-        } else {
-          dispatch({
-            type: "SET_FILTERED_ICONS",
-            payload: state.icons,
-          });
-        }
-      };
-
-      const handleKeydown = (e: KeyboardEvent) => {
-        if (e.ctrlKey && e.key === "k") {
-          e.preventDefault();
-          inputSearchTermRef.current?.focus();
-        }
-      };
-
-      const inputElement = inputSearchTermRef.current;
-
-      inputElement.addEventListener("input", handleInput);
-      window.addEventListener("keydown", handleKeydown);
-
-      return () => {
-        inputElement.removeEventListener("input", handleInput);
-        window.removeEventListener("keydown", handleKeydown);
-      };
+      dispatch({ type: "SET_FILTERED_ICONS", payload: state.icons });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, state.icons]);
+
+  // Keyboard shortcut Ctrl+K
+  useEffect(() => {
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "k") {
+        e.preventDefault();
+        document.getElementById("icon-search")?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
   }, []);
 
   return (
@@ -120,9 +74,14 @@ const IconPicker = () => {
           <div className="flex flex-row gap-4">
             <div className="relative">
               <Input
-                ref={inputSearchTermRef}
+                id="icon-search"
                 type="search"
                 placeholder="Find icons (Ctrl + K)"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value || null);
+                  setActiveTab("icons");
+                }}
               />
             </div>
             <ThemeToggle />
@@ -144,10 +103,6 @@ const IconPicker = () => {
         asChild
       >
         <main>
-          {inputSearchTermRef.current &&
-            inputSearchTermRef.current.value !== "" &&
-            state.filteredIcons.length <= 0 && <NoSearchResultMessage />}
-
           {state.filteredIcons.length > 0 ? (
             state.filteredIcons.map((icon, index) => (
               <button
@@ -179,7 +134,7 @@ const IconPicker = () => {
                     ? "opacity-80 rounded-2xl transition-all duration-75 ease-in-out"
                     : ""
                     }`}
-                  src={buildUrl(`${API_URL}/icons`, {
+                  src={buildUrl(`/api/icons`, {
                     i: icon.iconId,
                     theme: state.theme,
                   })}
@@ -197,16 +152,14 @@ const IconPicker = () => {
             ))
           ) : (
             <>
-              {inputSearchTermRef.current ? (
-                inputSearchTermRef.current.value === "" && (
-                  <div className="col-span-full text-center py-2 px-4">
-                    <p className="leading-7 [&:not(:first-child)]:mt-6">
-                      No available icons.
-                    </p>
-                  </div>
-                )
+              {searchTerm === "" ? (
+                <div className="col-span-full text-center py-2 px-4">
+                  <p className="leading-7 [&:not(:first-child)]:mt-6">
+                    No available icons.
+                  </p>
+                </div>
               ) : (
-                <NoSearchResultMessage />
+                isMounted && <NoSearchResultMessage />
               )}
             </>
           )}
@@ -312,7 +265,7 @@ const IconPicker = () => {
                       }}
                     >
                       <Image
-                        src={buildUrl(`${API_URL}/icons`, {
+                        src={buildUrl(`/api/icons`, {
                           i: icon.iconId,
                           theme: state.theme,
                         })}
